@@ -19,8 +19,8 @@ namespace core {
     ~glfw() {
       this->shutdown();
     }
-    glfw(glfw&)  = delete;
-    glfw(glfw&&) = delete;
+    glfw(glfw&)  = default;
+    glfw(glfw&&) = default;
 
 
     void init();

@@ -4,9 +4,6 @@
 #include "Intensity.h"
 
 
-using namespace std;
-
-
 double IntensityBulge(double R, double I0, double k) {
   return I0 * exp(-k * pow(R, 0.25));
 }

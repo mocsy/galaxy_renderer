@@ -8,9 +8,6 @@
 #include "CumulativeDistributionFunction.h"
 
 
-using namespace std;
-
-
 CumulativeDistributionFunction::CumulativeDistributionFunction()
     : m_pDistFun(NULL), m_vM1(), m_vY1(), m_vX1(), m_vM2(), m_vY2(), m_vX2() {
 }

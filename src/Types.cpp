@@ -1,52 +1,55 @@
-#include "Types.h"
 
 //--- Standard includes ------------------------------------------------------------------
 #include <cassert>
 #include <cstdlib>
 
 
+#include "Types.h"
+
+
 //----------------------------------------------------------------------------------------
 ParticleData::ParticleData()
-  :m_pState(NULL)
-  ,m_pAuxState(NULL)
-{}
+    : m_pState(NULL), m_pAuxState(NULL)
+{
+}
+
 
 //----------------------------------------------------------------------------------------
 ParticleData::ParticleData(PODState *pState, PODAuxState *pAuxState)
-  :m_pState(pState)
-  ,m_pAuxState(pAuxState)
+    : m_pState(pState), m_pAuxState(pAuxState)
 {
   assert(m_pState);
   assert(m_pAuxState);
 }
 
-//----------------------------------------------------------------------------------------
-ParticleData::ParticleData(const ParticleData &ref)
-  :m_pState(ref.m_pState)
-  ,m_pAuxState(ref.m_pAuxState)
-{}
 
 //----------------------------------------------------------------------------------------
-ParticleData& ParticleData::operator=(const ParticleData &ref)
+ParticleData::ParticleData(const ParticleData &ref)
+    : m_pState(ref.m_pState), m_pAuxState(ref.m_pAuxState)
 {
-  if (this!=&ref)
-  {
-    m_pState    = ref.m_pState;
+}
+
+
+//----------------------------------------------------------------------------------------
+ParticleData& ParticleData::operator=(const ParticleData &ref) {
+  if (this != &ref) {
+    m_pState = ref.m_pState;
     m_pAuxState = ref.m_pAuxState;
   }
 
   return *this;
 }
 
+
 //----------------------------------------------------------------------------------------
-void ParticleData::Reset()
-{
-  m_pState    = NULL;
+void ParticleData::Reset() {
+  m_pState = NULL;
   m_pAuxState = NULL;
 }
 
+
 //----------------------------------------------------------------------------------------
-bool ParticleData::IsNull() const
-{
+bool ParticleData::IsNull() const {
   return m_pState && m_pAuxState;
 }
+

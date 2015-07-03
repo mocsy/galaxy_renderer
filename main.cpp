@@ -10,16 +10,15 @@
 #include <iostream>
 
 
-#include "core/window.h"
+#include "app.h"
 
 
 int main(int argc, char** argv) {
   try {
-    NBodyWnd wndMain(800, "Density wave simulation");
+    app galaxy_renderer(4000);
+    galaxy_renderer.init();
 
-    // Define simulation size
-    wndMain.Init(4000);
-    wndMain.MainLoop();
+    galaxy_renderer.run();
   } catch(std::exception & exc) {
     std::cout << "Fatal error: " << exc.what() << std::endl;
   } catch(...) {

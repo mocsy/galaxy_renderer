@@ -60,7 +60,8 @@ void NBodyWnd::Init(int num) {
    300,      // orbital velovity at the edge of the disk
    40000);   // total number of stars
    */
-  m_galaxy.Reset(13000,    // radius of the galaxy
+  m_galaxy.Reset(
+    13000,    // radius of the galaxy
     4000,     // radius of the core
     0.0004,   // angluar offset of the density wave per parsec of radius
     0.9,      // excentricity at the edge of the core
@@ -68,7 +69,8 @@ void NBodyWnd::Init(int num) {
     0.5,
     200,      // orbital velocity at the edge of the core
     300,      // orbital velovity at the edge of the disk
-    30000);   // total number of stars
+    30000     // total number of stars
+  );
 
   m_roi = m_galaxy.GetFarFieldRad() * 1.3;
 

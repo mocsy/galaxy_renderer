@@ -10,7 +10,7 @@
 #include <iostream>
 
 
-#include "NBodyWnd.h"
+#include "core/window.h"
 
 
 int main(int argc, char** argv) {

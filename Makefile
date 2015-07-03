@@ -13,8 +13,9 @@ LIBS_SHARED_FREETYPE  =
 LIBS_SHARED_OPENGL    =
 LIBS_SHARED_SYSTEM    =
 
+
 ifeq ($(MSYSTEM), MINGW64)
-	LIBS_STATIC_SYSTEM += -lwinmm -mwindows
+	LIBS_STATIC_SYSTEM += -lwinmm -mwindows -lglu32 -lgdi32
 else
 endif
 

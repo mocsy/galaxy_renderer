@@ -2,27 +2,10 @@
 #define _GALAXY_H
 
 
-#include "Vector.h"
+#include <core/vectors.h>
 
 
-class Star {
-  public:
-
-
-  Star();
-  const Vec2D& CalcXY();
-
-  double m_theta;    // position auf der ellipse
-  double m_velTheta; // angular velocity
-  double m_angle;    // Schräglage der Ellipse
-  double m_a;        // kleine halbachse
-  double m_b;        // große halbachse
-  double m_temp;     // star temperature
-  double m_mag;      // brigtness;
-  Vec2D m_center;   // center of the elliptical orbit
-  Vec2D m_vel;      // Current velocity (calculated)
-  Vec2D m_pos;      // current position in kartesion koordinates
-};
+#include "star.h"
 
 
 /*
@@ -32,16 +15,16 @@ class Galaxy {
   public:
 
 
-  Galaxy(double rad = 15000, double radCore = 6000, double deltaAng = 0.019, double ex1 = 0.8, double ex2 = 1, double velInner = 200, double velOuter = 300, int numStars = 20000);
+  Galaxy(double rad = 15000, double radCore = 6000, double deltaAng = 0.019, double ex1 = 0.8, double ex2 = 1, double sigma = 0.5, double velInner = 200, double velOuter = 300, int numStars = 20000);
   ~Galaxy();
 
   void Reset(double rad, double radCore, double deltaAng, double ex1, double ex2, double sigma, double velInner, double velOuter, int numStars);
 
   void Reset();
 
-  Star* GetStars() const;
-  Star* GetDust() const;
-  Star* GetH2() const;
+  star* GetStars() const;
+  star* GetDust() const;
+  star* GetH2() const;
 
   double GetRad() const;
   double GetCoreRad() const;
@@ -66,7 +49,7 @@ class Galaxy {
 
   void SingleTimeStep(double time);
 
-  const Vec2D& GetStarPos(int idx);
+  core::t_vec2d const& GetStarPos(int idx);
 
   void SetSigma(double sigma);
   void SetAngularOffset(double offset);
@@ -114,10 +97,10 @@ class Galaxy {
   private:
 
 
-  Vec2D m_pos;             ///< Center of the galaxy
-  Star *m_pStars;          ///< Pointer to an array of star data
-  Star *m_pDust;           ///< Pointer to an array of dusty areas
-  Star *m_pH2;
+  core::t_vec2d m_pos;             ///< Center of the galaxy
+  star *m_pStars;          ///< Pointer to an array of star data
+  star *m_pDust;           ///< Pointer to an array of dusty areas
+  star *m_pH2;
 };
 
 

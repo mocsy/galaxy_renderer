@@ -4,35 +4,32 @@
 
 #pragma pack(push, 1)
 
-//---------------------------------------------------------------------
-struct PODState
-{
+
+struct PODState {
   double x;
   double y;
   double vx;
   double vy;
 };
 
-//---------------------------------------------------------------------
-struct PODAuxState
-{
+
+struct PODAuxState {
   double mass;
 };
 
-//---------------------------------------------------------------------
-struct PODDeriv
-{
+
+struct PODDeriv {
   double vx;
   double vy;
   double ax;
   double ay;
 };
 
+
 #pragma pack(pop)
 
-//---------------------------------------------------------------------
-struct ParticleData
-{
+
+struct ParticleData {
   ParticleData();
   ParticleData(PODState *m_pState, PODAuxState *m_pAuxState);
   ParticleData(const ParticleData &ref);
@@ -45,4 +42,6 @@ struct ParticleData
   PODAuxState *m_pAuxState;
 };
 
+
 #endif // _TYPES_H
+

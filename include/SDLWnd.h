@@ -1,11 +1,8 @@
 #ifndef _SDL_WINDOW_H
 #define _SDL_WINDOW_H
 
-//--- Standard includes --------------------------------------------------------
-#include <string>
 
-//--- SDL and OpenGL includes --------------------------------------------------
-//#include <GL/glew.h>
+#include <string>
 #include <GL/gl.h>	// Header File For The OpenGL32 Library
 #include <GL/glext.h>
 #include <GL/glu.h>	// Header File For The GLu32 Library
@@ -14,14 +11,16 @@
 #include <SDL/SDL_gfxPrimitives.h>
 #include <SDL/SDL_opengl.h> // opengl support
 
+
 #include "Vector.h"
 
 
-//------------------------------------------------------------------------------
-/** \brief Basic infrastructure for grafical output using SDL/OpenGL */
-class SDLWindow
-{
-public:
+/*
+ * basic infrastructure for grafical output using SDL/OpenGL
+ */
+class SDLWindow {
+  public:
+
 
   SDLWindow(int width, int height, double axisLen, const std::string &caption);
   virtual ~SDLWindow();
@@ -32,7 +31,9 @@ public:
   int GetHeight() const;
   virtual void Render() = 0;
 
-protected:
+
+  protected:
+
 
   virtual void PollEvents();
   virtual void OnProcessEvents(uint8_t type);
@@ -74,7 +75,9 @@ protected:
 
   static GLuint s_fontBase;
 
-protected:
+
+  protected:
+
 
   double m_fov;  ///< Length of an axis
   int m_width;       ///< Width of the window in pixel
@@ -91,15 +94,19 @@ protected:
   GLuint m_texStar;
 
   // function pointer for point sprite extension
-  PFNGLPOINTPARAMETERFARBPROC  glPointParameterfARB;
+  PFNGLPOINTPARAMETERFARBPROC glPointParameterfARB;
   PFNGLPOINTPARAMETERFVARBPROC glPointParameterfvARB;
 
   volatile bool m_bRunning;
 
-private:
+
+  private:
+
 
   void InitGL();
   void InitPointSpriteExtension();
 };
 
+
 #endif
+

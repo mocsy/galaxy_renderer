@@ -1,13 +1,13 @@
 #ifndef _GALAXY_H
 #define _GALAXY_H
 
+
 #include "Vector.h"
 
 
-//------------------------------------------------------------------------
-class Star
-{
-public:
+class Star {
+  public:
+
 
   Star();
   const Vec2D& CalcXY();
@@ -19,36 +19,23 @@ public:
   double m_b;        // große halbachse
   double m_temp;     // star temperature
   double m_mag;      // brigtness;
-  Vec2D  m_center;   // center of the elliptical orbit
-  Vec2D  m_vel;      // Current velocity (calculated)
-  Vec2D  m_pos;      // current position in kartesion koordinates
+  Vec2D m_center;   // center of the elliptical orbit
+  Vec2D m_vel;      // Current velocity (calculated)
+  Vec2D m_pos;      // current position in kartesion koordinates
 };
 
-//------------------------------------------------------------------------
-/** \brief A class to encapsulate the geometric details of a spiral galaxy. */
-class Galaxy
-{
-public:
 
-  Galaxy(double rad = 15000,
-         double radCore = 6000,
-         double deltaAng = 0.019,
-         double ex1=0.8,
-         double ex2 = 1,
-         double velInner = 200,
-         double velOuter = 300,
-         int numStars=20000);
- ~Galaxy();
+/*
+ * a class to encapsulate the geometric details of a spiral galaxy
+ */
+class Galaxy {
+  public:
 
-  void Reset(double rad,
-             double radCore,
-             double deltaAng,
-             double ex1,
-             double ex2,
-             double sigma,
-             double velInner,
-             double velOuter,
-             int numStars);
+
+  Galaxy(double rad = 15000, double radCore = 6000, double deltaAng = 0.019, double ex1 = 0.8, double ex2 = 1, double velInner = 200, double velOuter = 300, int numStars = 20000);
+  ~Galaxy();
+
+  void Reset(double rad, double radCore, double deltaAng, double ex1, double ex2, double sigma, double velInner, double velOuter, int numStars);
 
   void Reset();
 
@@ -77,7 +64,6 @@ public:
   int GetNumDust() const;
   int GetNumH2() const;
 
-
   void SingleTimeStep(double time);
 
   const Vec2D& GetStarPos(int idx);
@@ -89,7 +75,9 @@ public:
   void SetExInner(double ex);
   void SetExOuter(double ex);
 
-private:
+
+  private:
+
 
   void InitStars(double sigma);
 
@@ -116,11 +104,15 @@ private:
   double m_time;
   double m_timeStep;
 
-public:
 
-  int m_numberByRad[100];  ///< Historgramm showing distribution of stars
+  public:
 
-private:
+
+  int m_numberByRad [100];  ///< Historgramm showing distribution of stars
+
+
+  private:
+
 
   Vec2D m_pos;             ///< Center of the galaxy
   Star *m_pStars;          ///< Pointer to an array of star data
@@ -128,4 +120,6 @@ private:
   Star *m_pH2;
 };
 
+
 #endif // _GALAXY_H
+

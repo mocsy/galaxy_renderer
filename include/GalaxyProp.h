@@ -2,21 +2,17 @@
 #define _GALAXY_PROP_H
 
 
-//-------------------------------------------------------------------------------------------
-/** \brief Encapsulates the data needed to define the galaxies shape. */
-class GalaxyProp
-{
-friend class Galaxy;
+/*
+ * encapsulates the data needed to define the galaxies shape
+ */
+class GalaxyProp {
+  friend class Galaxy;
 
-  GalaxyProp(double radDisk,
-             double radCore,
-             double deltaAng,
-             double exInner,
-             double exOuter,
-             double velInner,
-             double velOuter);
 
-public:
+  GalaxyProp(double radDisk, double radCore, double deltaAng, double exInner, double exOuter, double velInner, double velOuter);
+
+
+  public:
 
   // Excentricity of the orbital ellipses
   double m_excInner;       ///< Excentricity of the innermost ellipse
@@ -38,4 +34,6 @@ public:
   double m_radFarField;    ///< The radius after which all density waves must have circular shape
 };
 
+
 #endif // _GALAXY_PROP_H
+

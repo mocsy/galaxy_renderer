@@ -102,10 +102,6 @@ void CumulativeDistributionFunction::BuildCDF(int nSteps) {
 }
 
 
-CumulativeDistributionFunction::~CumulativeDistributionFunction() {
-}
-
-
 double CumulativeDistributionFunction::ProbFromVal(double fVal) {
   if (fVal < m_fMin || fVal > m_fMax)
     throw std::runtime_error("out of range");

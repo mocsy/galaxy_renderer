@@ -79,23 +79,27 @@ double FastMath::nvzz(double m, double s) {
 /*
  * brightness intensity calculation of the galaxy disc by radius
  */
+/*
 double IntensityDisk(double r, double i0, double a) {
   return i0 * exp(-r / a);
 }
-
+*/
 
 /*
  * galaxy bulge intensity calculation
  */
+/*
 double IntensityBulge(double r, double i0, double k) {
   return i0 * exp(-k * pow(r, 0.25));
 }
-
+*/
 
 /*
  * combined disc and bulge intensity calculation
  */
+/*
 double Intensity(double r, double r_bulge, double i0, double a, double k) {
   return (r < r_bulge) ? IntensityBulge(r, i0, k) : IntensityDisk(r - r_bulge, IntensityBulge(r_bulge, i0, k), a);
 }
+*/
 

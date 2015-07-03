@@ -39,7 +39,21 @@ namespace core {
       shutdown();
     }
     window(window&)  = delete;
-    window(window&&) = delete;
+    window(window&& right) {
+      this->m_handle = right.m_handle;
+      this->m_parent = right.m_parent;
+      this->m_monitor = right.m_monitor;
+      this->m_title = right.m_title;
+      this->m_width = right.m_width;
+      this->m_height = right.m_height;
+      this->m_anti_aliasing_level = right.m_anti_aliasing_level;
+      this->m_open_gl_major_version = right.m_open_gl_major_version;
+      this->m_open_gl_minor_version = right.m_open_gl_minor_version;
+
+      right.m_handle = nullptr;
+      right.m_parent = nullptr;
+      right.m_monitor = nullptr;
+    }
 
 
     void init();

@@ -35,7 +35,7 @@ SOURCES           = main.cpp $(SOURCES_LIB)
 OBJECTS           = $(SOURCES:.cpp=.o)
 OBJECTS_LIB       = $(SOURCES_LIB:.cpp=.o)
 STATIC_TARGET     = lib/libgalaxy_renderer.a
-EXECUTABLE_TARGET = galaxy_renderer.exe
+EXECUTABLE_TARGET = galaxy_renderer64.exe
 
 
 all: $(SOURCES) $(STATIC_TARGET) check $(EXECUTABLE_TARGET)

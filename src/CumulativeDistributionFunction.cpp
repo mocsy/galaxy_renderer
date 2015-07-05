@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
-#include <stdexcept>
 #include <utility>
 
 
@@ -120,8 +119,9 @@ CumulativeDistributionFunction::CumulativeDistributionFunction(CumulativeDistrib
 
 
 void CumulativeDistributionFunction::BuildCDF() {
-  double h = (m_max - m_min) / m_number_of_steps;
-  double x = 0, y = 0;
+  double h = (m_max - m_min) / m_number_of_steps,
+         x = 0,
+         y = 0;
 
   m_vX1.clear();
   m_vY1.clear();
@@ -130,12 +130,18 @@ void CumulativeDistributionFunction::BuildCDF() {
   m_vM1.clear();
   m_vM2.clear();
 
-  // impson rule for integration of the distribution function
+  // Simpson rule for integration of the distribution function
   m_vY1.push_back(0.0);
   m_vX1.push_back(0.0);
   for (int i = 0; i < m_number_of_steps; i += 2) {
     x = (i + 2) * h;
-    y += h / 3 * ((this->*m_intensity_funtion)(m_min + i * h) + 4 * (this->*m_intensity_funtion)(m_min + (i + 1) * h) + (this->*m_intensity_funtion)(m_min + (i + 2) * h));
+    y += h / 3 * (
+        (this->*m_intensity_funtion)(m_min + i * h)
+          +
+        4 * (this->*m_intensity_funtion)(m_min + (i + 1) * h)
+          +
+        (this->*m_intensity_funtion)(m_min + (i + 2) * h)
+      );
 
     m_vM1.push_back((y - m_vY1.back()) / (2 * h));
     m_vX1.push_back(x);
@@ -146,8 +152,8 @@ void CumulativeDistributionFunction::BuildCDF() {
   m_vM1.push_back(0.0);
 
   // all arrays must have the same length
-  if (m_vM1.size() != m_vX1.size() || m_vM1.size() != m_vY1.size())
-    throw std::runtime_error("CumulativeDistributionFunction::BuildCDF: array size mismatch (1)!");
+  assert(m_vM1.size() == m_vX1.size());
+  assert(m_vX1.size() == m_vY1.size());
 
   // normalize
   for (std::size_t i = 0; i < m_vY1.size(); ++i) {
@@ -178,15 +184,15 @@ void CumulativeDistributionFunction::BuildCDF() {
   m_vM2.push_back(0.0);
 
   // all arrays must have the same length
-  if (m_vM2.size() != m_vX2.size() || m_vM2.size() != m_vY2.size())
-    throw std::runtime_error("CumulativeDistributionFunction::BuildCDF: array size mismatch (1)!");
+  assert(m_vM2.size() == m_vX2.size());
+  assert(m_vX2.size() == m_vY2.size());
 
 }
 
 
 double CumulativeDistributionFunction::ProbFromVal(double fVal) {
-  if (fVal < m_min || fVal > m_max)
-    throw std::runtime_error("out of range");
+  assert(fVal >= m_min);
+  assert(fVal <= m_max);
 
   double h = 2 * ((m_max - m_min) / m_number_of_steps);
   int i = (int) ((fVal - m_min) / h);
@@ -199,8 +205,8 @@ double CumulativeDistributionFunction::ProbFromVal(double fVal) {
 
 
 double CumulativeDistributionFunction::ValFromProb(double fVal) {
-  if (fVal < 0 || fVal > 1)
-    throw std::runtime_error("out of range");
+  assert(fVal >= m_min);
+  assert(fVal <= m_max);
 
   double h = 1.0 / m_vY2.size();
 

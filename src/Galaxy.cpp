@@ -17,6 +17,7 @@
 
 #include "Galaxy.h"
 #include "Constants.h"
+#include "core/support/xorshift.h"
 
 
 double rnd_spread(double v, double o) {
@@ -43,70 +44,72 @@ Galaxy::Galaxy(double rad, double radCore, double deltaAng, double ex1, double e
       m_vstar(std::vector<star>()),
       m_vdust(std::vector<star>()),
       m_vh2(std::vector<star>()),
-      m_cdf(CumulativeDistributionFunction(m_radGalaxy / 3.0, m_radCore, m_radFarField))
+      m_cdf(CumulativeDistributionFunction()),
+      m_count_by_rad(std::vector<std::uint64_t>()),
+      m_seed(1),
+      m_number_of_stars(numStars)
 {
+  // fixed size intializiations
   m_vh2.resize(600);
-  m_vstar.resize(numStars);
-  m_vdust.resize(numStars >> 1);
+  m_count_by_rad.resize(100);
 
-  /*
-  m_cdf.SetupRealistic(
-    //1.0,                // maximum brightness
-    //0.02,               // k (bulge)
-    m_radGalaxy / 3.0,  // disc scale length
-    m_radCore,          // bulge radius
-    //0,                  // start of intensity curve
-    m_radFarField,      // end of intensity curve
-    1000                // Anzahl der stützstellen
-  );
-  */
+  Reset();
+}
+
+
+Galaxy::Galaxy(Galaxy&& rhs)
+  :
+    m_elEx1(rhs.m_elEx1),
+    m_elEx2(rhs.m_elEx2),
+    m_velOrigin(rhs.m_velOrigin),
+    m_velInner(rhs.m_velInner),
+    m_velOuter(rhs.m_velOuter),
+    m_angleOffset(rhs.m_angleOffset),
+    m_radCore(rhs.m_radCore),
+    m_radGalaxy(rhs.m_radGalaxy),
+    m_radFarField(rhs.m_radFarField),
+    m_sigma(rhs.m_sigma),
+    m_velAngle(rhs.m_velAngle),
+    m_time(rhs.m_time),
+    m_timeStep(rhs.m_timeStep),
+    m_pos(std::move(rhs.m_pos)),
+    m_vstar(std::move(rhs.m_vstar)),
+    m_vdust(std::move(rhs.m_vdust)),
+    m_vh2(std::move(rhs.m_vh2)),
+    m_cdf(std::move(rhs.m_cdf)),
+    m_count_by_rad(std::move(rhs.m_count_by_rad)),
+    m_seed(rhs.m_seed),
+    m_number_of_stars(rhs.m_number_of_stars)
+{
+// fixed size intializiations
+m_vh2.resize(600);
+m_count_by_rad.resize(100);
+
+Reset();
 }
 
 
 void Galaxy::Reset() {
-  Reset(m_radGalaxy, m_radCore, m_angleOffset, m_elEx1, m_elEx2, m_sigma, m_velInner, m_velOuter, m_vstar.size());
+  // match (new?) size
+  m_vstar.resize(m_number_of_stars);
+  m_vdust.resize(m_number_of_stars >> 1);
+
+  // empty fill structures
+  std::fill(m_count_by_rad.begin(), m_count_by_rad.end(), 0);
+  std::fill(m_vstar.begin(), m_vstar.end(), star());
+  std::fill(m_vdust.begin(), m_vdust.end(), star());
+  std::fill(m_vh2.begin(), m_vh2.end(), star());
+
+  // calculate derived values
+  m_radFarField = m_radGalaxy * 2.0;
+  m_cdf = CumulativeDistributionFunction(m_radGalaxy / 3.0, m_radCore, m_radFarField);
+
+  // obviously generate the stars
+  InitStars();
 }
 
 
-void Galaxy::Reset(double rad, double radCore, double deltaAng, double ex1, double ex2, double sigma, double velInner, double velOuter, int numStars) {
-  m_elEx1 = ex1;
-  m_elEx2 = ex2;
-  m_velInner = velInner;
-  m_velOuter = velOuter;
-  m_elEx2 = ex2;
-  m_angleOffset = deltaAng;
-  m_radCore = radCore;
-  m_radGalaxy = rad;
-  m_radFarField = m_radGalaxy * 2;  // there is no science behind this threshold it just should look nice
-  m_sigma = sigma;
-
-  m_cdf = CumulativeDistributionFunction(
-    m_radGalaxy / 3.0,
-    m_radCore,
-    m_radFarField
-  );
-  /*
-  m_cdf.SetupRealistic(
-    //1.0,                // maximum brightness
-    //0.02,               // k (bulge)
-    m_radGalaxy / 3.0,  // disc scale length
-    m_radCore,          // bulge radius
-    //0,                  // start of intensity curve
-    m_radFarField,      // end of intensity curve
-    1000                // Anzahl der stützstellen
-  );
-  */
-
-  for (int i = 0; i < 100; ++i)
-    m_numberByRad [i] = 0;
-
-  m_vstar.resize(numStars);
-  m_vdust.resize(numStars >> 1);
-  InitStars(m_sigma);
-}
-
-
-void Galaxy::InitStars(double sigma) {
+void Galaxy::InitStars() {
   static const double c_temperature = 6000.0;
   assert(3 <= m_vstar.size());
 
@@ -172,7 +175,7 @@ void Galaxy::InitStars(double sigma) {
     );
 
     int idx = std::min(1.0 / dh * (it->m_a + it->m_b) / 2.0, 99.0);
-    m_numberByRad [idx]++;
+    m_count_by_rad [idx]++;
   }
 
   // initialize Dust
@@ -201,7 +204,7 @@ void Galaxy::InitStars(double sigma) {
     dust.m_mag = 0.015 + 0.01 * (double) rand() / (double) RAND_MAX;
 
     int idx = std::min(1.0 / dh * (dust.m_a + dust.m_b) / 2.0, 99.0);
-    m_numberByRad [idx]++;
+    m_count_by_rad [idx]++;
   }
 
   // initialize h2
@@ -220,7 +223,7 @@ void Galaxy::InitStars(double sigma) {
     m_vh2[k1].m_temp = 6000 + (6000 * ((double) rand() / RAND_MAX)) - 3000;
     m_vh2[k1].m_mag = 0.1 + 0.05 * (double) rand() / (double) RAND_MAX;
     int idx = std::min(1.0 / dh * (m_vh2[k1].m_a + m_vh2[k1].m_b) / 2.0, 99.0);
-    m_numberByRad [idx]++;
+    m_count_by_rad [idx]++;
 
     int k2 = 2 * i + 1;
     m_vh2[k2].m_a = rad + 1000;
@@ -232,12 +235,12 @@ void Galaxy::InitStars(double sigma) {
     m_vh2[k2].m_temp = m_vh2[k1].m_temp;
     m_vh2[k2].m_mag = m_vh2[k1].m_mag;
     idx = std::min(1.0 / dh * (m_vh2[k2].m_a + m_vh2[k2].m_b) / 2.0, 99.0);
-    m_numberByRad [idx]++;
+    m_count_by_rad [idx]++;
   }
 }
 
 
-double Galaxy::GetSigma() const {
+double const Galaxy::GetSigma() const {
   return m_sigma;
 }
 
@@ -263,17 +266,17 @@ std::vector<star> const& Galaxy::GetH2() const {
 }
 
 
-double Galaxy::GetRad() const {
+double const Galaxy::GetRad() const {
   return m_radGalaxy;
 }
 
 
-double Galaxy::GetCoreRad() const {
+double const Galaxy::GetCoreRad() const {
   return m_radCore;
 }
 
 
-double Galaxy::GetFarFieldRad() const {
+double const Galaxy::GetFarFieldRad() const {
   return m_radFarField;
 }
 
@@ -291,7 +294,7 @@ void Galaxy::SetAngularOffset(double offset) {
  * param
  * rad Radius in parsec
  */
-double Galaxy::GetOrbitalVelocity(double rad) const {
+double const Galaxy::GetOrbitalVelocity(double const& rad) const {
   double vel_kms = 0.0;  // velovity in kilometer per seconds
 
   // Realistically looking velocity curves for the Wikipedia models.
@@ -338,7 +341,7 @@ double Galaxy::GetOrbitalVelocity(double rad) const {
 }
 
 
-double Galaxy::GetExcentricity(double r) const {
+double const Galaxy::GetExcentricity(double const& r) const {
   if (r < m_radCore) {
     // Core region of the galaxy. Innermost part is round
     // excentricity increasing linear to the border of the core.
@@ -353,22 +356,22 @@ double Galaxy::GetExcentricity(double r) const {
 }
 
 
-double Galaxy::GetAngularOffset(double rad) const {
+double const Galaxy::GetAngularOffset(double const& rad) const {
   return rad * m_angleOffset;
 }
 
 
-double Galaxy::GetAngularOffset() const {
+double const Galaxy::GetAngularOffset() const {
   return m_angleOffset;
 }
 
 
-double Galaxy::GetExInner() const {
+double const Galaxy::GetExInner() const {
   return m_elEx1;
 }
 
 
-double Galaxy::GetExOuter() const {
+double const Galaxy::GetExOuter() const {
   return m_elEx2;
 }
 
@@ -397,12 +400,12 @@ void Galaxy::SetExOuter(double ex) {
 }
 
 
-double Galaxy::GetTimeStep() const {
+double const Galaxy::GetTimeStep() const {
   return m_timeStep;
 }
 
 
-double Galaxy::GetTime() const {
+double const Galaxy::GetTime() const {
   return m_time;
 }
 
@@ -432,7 +435,7 @@ void Galaxy::SingleTimeStep(double time) {
 }
 
 
-core::t_vec2d const& Galaxy::GetStarPos(int idx) {
+core::t_vec2d const& Galaxy::get_star_pos_at_index(int idx) {
   return m_vstar.at(idx).m_pos;
 }
 

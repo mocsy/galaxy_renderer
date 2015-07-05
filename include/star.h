@@ -32,6 +32,7 @@ struct star {
   ~star()      = default;
 
   star& operator=(star&);
+  star& operator=(star const&);
   star& operator=(star&&);
 
   const core::t_vec2d& CalcXY();

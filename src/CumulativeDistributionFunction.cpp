@@ -14,7 +14,7 @@ CumulativeDistributionFunction::CumulativeDistributionFunction()
   m_min(0.0),
   m_max(0.0),
   m_width(0.0),
-  m_number_of_steps(1),
+  m_number_of_steps(0),
   m_i0(1.0),
   m_k(0.02),
   m_a(0.0),

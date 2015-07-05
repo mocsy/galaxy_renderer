@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <cinttypes>
 
 
 #include "core/vectors.h"
@@ -18,41 +19,40 @@ class Galaxy {
 
 
   Galaxy(double rad = 15000, double radCore = 6000, double deltaAng = 0.019, double ex1 = 0.8, double ex2 = 1, double sigma = 0.5, double velInner = 200, double velOuter = 300, int numStars = 20000);
+  Galaxy(Galaxy&&);
   ~Galaxy() = default;
-
-  void Reset(double rad, double radCore, double deltaAng, double ex1, double ex2, double sigma, double velInner, double velOuter, int numStars);
 
   void Reset();
 
-  std::vector<star> const& GetStars() const;
-  std::vector<star> const& GetDust() const;
-  std::vector<star> const& GetH2() const;
-
-  double GetRad() const;
-  double GetCoreRad() const;
-  double GetFarFieldRad() const;
-  double GetSigma() const;
-
   // Properties depending on the orbital radius
 
-  double GetExcentricity(double rad) const;
-  double GetOrbitalVelocity(double rad) const;
+  double const GetExcentricity(double const& rad) const;
+  double const GetOrbitalVelocity(double const& rad) const;
+  double const GetAngularOffset(double const& rad) const;
 
-  double GetAngularOffset(double rad) const;
-  double GetAngularOffset() const;
-
-  double GetExInner() const;
-  double GetExOuter() const;
-  double GetTimeStep() const;
-  double GetTime() const;
+  // getters
+  double const GetRad() const;
+  double const GetCoreRad() const;
+  double const GetFarFieldRad() const;
+  double const GetSigma() const;
+  double const GetExInner() const;
+  double const GetExOuter() const;
+  double const GetTimeStep() const;
+  double const GetTime() const;
+  double const GetAngularOffset() const;
   int const GetNumStars() const;
   int const GetNumDust() const;
   int const GetNumH2() const;
+  std::vector<star> const& GetStars() const;
+  std::vector<star> const& GetDust() const;
+  std::vector<star> const& GetH2() const;
+  core::t_vec2d const& get_star_pos_at_index(int idx);
+
 
   void SingleTimeStep(double time);
 
-  core::t_vec2d const& GetStarPos(int idx);
 
+  // setters
   void SetSigma(double sigma);
   void SetAngularOffset(double offset);
   void SetCoreRad(double rad);
@@ -64,7 +64,7 @@ class Galaxy {
   private:
 
 
-  void InitStars(double sigma);
+  void InitStars();
 
   // Parameters needed for defining the general structure of the galaxy
 
@@ -82,28 +82,21 @@ class Galaxy {
   double m_radFarField;    ///< The radius after which all density waves must have circular shape
   double m_sigma;          ///< Distribution of stars
   double m_velAngle;       ///< Angular velocity of the density waves
-//  int m_numStars;          ///< Total number of stars
-//  int m_numDust;           ///< Number of Dust Particles
-//  int m_numH2;             ///< Number of H2 Regions
 
   double m_time;
   double m_timeStep;
-
-
-  public:
-
-
-  int m_numberByRad [100];  ///< Historgramm showing distribution of stars
-
-
-  private:
-
 
   core::t_vec2d m_pos;         // Center of the galaxy
   std::vector<star> m_vstar;   // Pointer to an array of star data
   std::vector<star> m_vdust;   // Pointer to an array of dusty areas
   std::vector<star> m_vh2;
+
   CumulativeDistributionFunction m_cdf;
+
+  std::vector<std::uint64_t> m_count_by_rad;  ///< Historgramm showing distribution of stars
+
+  std::uint64_t m_seed;    // randomizer seed
+  std::uint64_t m_number_of_stars;
 };
 
 

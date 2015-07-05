@@ -80,6 +80,22 @@ star& star::operator=(star& rhs) {
 }
 
 
+star& star::operator=(star const& rhs) {
+  this->m_theta    = rhs.m_theta;
+  this->m_velTheta = rhs.m_velTheta;
+  this->m_angle    = rhs.m_angle;
+  this->m_a        = rhs.m_a;
+  this->m_b        = rhs.m_b;
+  this->m_temp     = rhs.m_temp;
+  this->m_mag      = rhs.m_mag;
+  this->m_center   = rhs.m_center;
+  this->m_vel      = rhs.m_vel;
+  this->m_pos      = rhs.m_pos;
+
+  return *this;
+}
+
+
 star& star::operator=(star&& rhs) {
   this->m_theta    = rhs.m_theta;
   this->m_velTheta = rhs.m_velTheta;

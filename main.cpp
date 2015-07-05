@@ -10,10 +10,19 @@
 #include <iostream>
 
 
+#ifdef __MINGW64__
+#include <windows.h>
+#endif
+
+
 #include "app.h"
 
 
-int main(int argc, char** argv) {
+#ifdef __MINGW64__
+int WINAPI WinMain (HINSTANCE hInst, HINSTANCE hPrev, char* lpCmdLine, int nCmdShow) {
+#else
+int main (int argc, char** argv) {
+#endif
   try {
     app galaxy_renderer(4000);
     galaxy_renderer.init();

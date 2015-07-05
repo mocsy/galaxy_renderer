@@ -43,21 +43,23 @@ Galaxy::Galaxy(double rad, double radCore, double deltaAng, double ex1, double e
       m_vstar(std::vector<star>()),
       m_vdust(std::vector<star>()),
       m_vh2(std::vector<star>()),
-      m_cdf(CumulativeDistributionFunction())
+      m_cdf(CumulativeDistributionFunction(m_radGalaxy / 3.0, m_radCore, m_radFarField))
 {
   m_vh2.resize(600);
   m_vstar.resize(numStars);
   m_vdust.resize(numStars >> 1);
 
+  /*
   m_cdf.SetupRealistic(
-    1.0,                // maximum brightness
-    0.02,               // k (bulge)
+    //1.0,                // maximum brightness
+    //0.02,               // k (bulge)
     m_radGalaxy / 3.0,  // disc scale length
     m_radCore,          // bulge radius
-    0,                  // start of intensity curve
+    //0,                  // start of intensity curve
     m_radFarField,      // end of intensity curve
     1000                // Anzahl der stützstellen
   );
+  */
 }
 
 
@@ -78,15 +80,22 @@ void Galaxy::Reset(double rad, double radCore, double deltaAng, double ex1, doub
   m_radFarField = m_radGalaxy * 2;  // there is no science behind this threshold it just should look nice
   m_sigma = sigma;
 
+  m_cdf = CumulativeDistributionFunction(
+    m_radGalaxy / 3.0,
+    m_radCore,
+    m_radFarField
+  );
+  /*
   m_cdf.SetupRealistic(
-    1.0,                // maximum brightness
-    0.02,               // k (bulge)
+    //1.0,                // maximum brightness
+    //0.02,               // k (bulge)
     m_radGalaxy / 3.0,  // disc scale length
     m_radCore,          // bulge radius
-    0,                  // start of intensity curve
+    //0,                  // start of intensity curve
     m_radFarField,      // end of intensity curve
     1000                // Anzahl der stützstellen
   );
+  */
 
   for (int i = 0; i < 100; ++i)
     m_numberByRad [i] = 0;

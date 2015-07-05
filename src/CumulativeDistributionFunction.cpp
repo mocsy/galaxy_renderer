@@ -3,39 +3,124 @@
 #include <cstdio>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
 
 
 #include "CumulativeDistributionFunction.h"
 
 
 CumulativeDistributionFunction::CumulativeDistributionFunction()
-    : m_pDistFun(NULL), m_vM1(), m_vY1(), m_vX1(), m_vM2(), m_vY2(), m_vX2() {
+    :
+  m_intensity_funtion(&CumulativeDistributionFunction::Intensity),
+  m_min(0.0),
+  m_max(0.0),
+  m_width(0.0),
+  m_number_of_steps(1),
+  m_i0(1.0),
+  m_k(0.02),
+  m_a(0.0),
+  m_bulge_radius(0.0),
+  m_vM1(),
+  m_vY1(),
+  m_vX1(),
+  m_vM2(),
+  m_vY2(),
+  m_vX2()
+{
+  BuildCDF();
+}
+
+CumulativeDistributionFunction::CumulativeDistributionFunction(double a, double bulge_radius, double max, int number_of_steps)
+  :
+    m_intensity_funtion(&CumulativeDistributionFunction::Intensity),
+    m_min(0.0),
+    m_max(max),
+    m_width(0.0),
+    m_number_of_steps(number_of_steps),
+    m_i0(1.0),
+    m_k(0.02),
+    m_a(a),
+    m_bulge_radius(bulge_radius),
+    m_vM1(),
+    m_vY1(),
+    m_vX1(),
+    m_vM2(),
+    m_vY2(),
+    m_vX2()
+{
+  BuildCDF();
 }
 
 
-void CumulativeDistributionFunction::SetupRealistic(double I0, double k, double a, double RBulge, double min, double max, int nSteps) {
-//  double I0 = 1;
-//  double k=0.2;
-// double RBulge = 3;
+/*
+m_cdf.SetupRealistic(
+  1.0,                // maximum brightness
+  0.02,               // k (bulge)
+  m_radGalaxy / 3.0,  // disc scale length
+  m_radCore,          // bulge radius
+  0,                  // start of intensity curve
+  m_radFarField,      // end of intensity curve
+  1000                // Anzahl der stützstellen
+);
+*/
 
-  m_fMin = min;
-  m_fMax = max;
-  m_nSteps = nSteps;
+/*
+void CumulativeDistributionFunction::SetupRealistic(double a, double bulge_radius, double max, int nSteps) {
+  m_min = max;
+  m_number_of_steps = nSteps;
 
-  m_I0 = I0;
-  m_k = k;
   m_a = a;
-  m_RBulge = RBulge;
-
-  m_pDistFun = &CumulativeDistributionFunction::Intensity;
+  m_bulge_radius = bulge_radius;
 
   // build the distribution function
   BuildCDF(m_nSteps);
 }
+*/
+
+CumulativeDistributionFunction& CumulativeDistributionFunction::operator=(CumulativeDistributionFunction&& rhs) {
+  this->m_intensity_funtion = &CumulativeDistributionFunction::Intensity;
+  this->m_min = rhs.m_min;
+  this->m_max = rhs.m_max;
+  this->m_width = rhs.m_width;
+  this->m_number_of_steps = rhs.m_number_of_steps;
+  this->m_i0 = rhs.m_i0;
+  this->m_k = rhs.m_k;
+  this->m_a = rhs.m_a;
+  this->m_bulge_radius = rhs.m_bulge_radius;
+  this->m_vM1 = std::move(rhs.m_vM1);
+  this->m_vY1 = std::move(rhs.m_vY1);
+  this->m_vX1 = std::move(rhs.m_vX1);
+  this->m_vM2 = std::move(rhs.m_vM2);
+  this->m_vY2 = std::move(rhs.m_vY2);
+  this->m_vX2 = std::move(rhs.m_vX2);
+
+  return *this;
+}
 
 
-void CumulativeDistributionFunction::BuildCDF(int nSteps) {
-  double h = (m_fMax - m_fMin) / nSteps;
+CumulativeDistributionFunction::CumulativeDistributionFunction(CumulativeDistributionFunction&& rhs)
+  :
+    m_intensity_funtion(&CumulativeDistributionFunction::Intensity),
+    m_min(rhs.m_min),
+    m_max(rhs.m_max),
+    m_width(rhs.m_width),
+    m_number_of_steps(rhs.m_number_of_steps),
+    m_i0(rhs.m_i0),
+    m_k(rhs.m_k),
+    m_a(rhs.m_a),
+    m_bulge_radius(rhs.m_bulge_radius),
+    m_vM1(std::move(rhs.m_vM1)),
+    m_vY1(std::move(rhs.m_vY1)),
+    m_vX1(std::move(rhs.m_vX1)),
+    m_vM2(std::move(rhs.m_vM2)),
+    m_vY2(std::move(rhs.m_vY2)),
+    m_vX2(std::move(rhs.m_vX2))
+{
+}
+
+
+void CumulativeDistributionFunction::BuildCDF() {
+  double h = (m_max - m_min) / m_number_of_steps;
   double x = 0, y = 0;
 
   m_vX1.clear();
@@ -45,12 +130,12 @@ void CumulativeDistributionFunction::BuildCDF(int nSteps) {
   m_vM1.clear();
   m_vM2.clear();
 
-  // Simpson rule for integration of the distribution function
+  // impson rule for integration of the distribution function
   m_vY1.push_back(0.0);
   m_vX1.push_back(0.0);
-  for (int i = 0; i < nSteps; i += 2) {
+  for (int i = 0; i < m_number_of_steps; i += 2) {
     x = (i + 2) * h;
-    y += h / 3 * ((this->*m_pDistFun)(m_fMin + i * h) + 4 * (this->*m_pDistFun)(m_fMin + (i + 1) * h) + (this->*m_pDistFun)(m_fMin + (i + 2) * h));
+    y += h / 3 * ((this->*m_intensity_funtion)(m_min + i * h) + 4 * (this->*m_intensity_funtion)(m_min + (i + 1) * h) + (this->*m_intensity_funtion)(m_min + (i + 2) * h));
 
     m_vM1.push_back((y - m_vY1.back()) / (2 * h));
     m_vX1.push_back(x);
@@ -64,7 +149,7 @@ void CumulativeDistributionFunction::BuildCDF(int nSteps) {
   if (m_vM1.size() != m_vX1.size() || m_vM1.size() != m_vY1.size())
     throw std::runtime_error("CumulativeDistributionFunction::BuildCDF: array size mismatch (1)!");
 
-  // normieren
+  // normalize
   for (std::size_t i = 0; i < m_vY1.size(); ++i) {
     m_vY1 [i] /= m_vY1.back();
     m_vM1 [i] /= m_vY1.back();
@@ -75,8 +160,8 @@ void CumulativeDistributionFunction::BuildCDF(int nSteps) {
   m_vY2.push_back(0.0);
 
   double p = 0;
-  h = 1.0 / nSteps;
-  for (int i = 1, k = 0; i < nSteps; ++i) {
+  h = 1.0 / m_number_of_steps;
+  for (int i = 1, k = 0; i < m_number_of_steps; ++i) {
     p = (double) i * h;
 
     for (; m_vY1 [k + 1] <= p; ++k) {
@@ -100,11 +185,11 @@ void CumulativeDistributionFunction::BuildCDF(int nSteps) {
 
 
 double CumulativeDistributionFunction::ProbFromVal(double fVal) {
-  if (fVal < m_fMin || fVal > m_fMax)
+  if (fVal < m_min || fVal > m_max)
     throw std::runtime_error("out of range");
 
-  double h = 2 * ((m_fMax - m_fMin) / m_nSteps);
-  int i = (int) ((fVal - m_fMin) / h);
+  double h = 2 * ((m_max - m_min) / m_number_of_steps);
+  int i = (int) ((fVal - m_min) / h);
   double remainder = fVal - i * h;
 
 //  printf("fVal=%2.2f; h=%2.2f; i=%d; m_vVal[i]=%2.2f; m_vAsc[i]=%2.2f;\n", fVal, h, i, m_vVal[i], m_vAsc[i]);
@@ -137,6 +222,6 @@ double CumulativeDistributionFunction::IntensityDisc(double R, double I0, double
 
 
 double CumulativeDistributionFunction::Intensity(double x) {
-  return (x < m_RBulge) ? IntensityBulge(x, m_I0, m_k) : IntensityDisc(x - m_RBulge, IntensityBulge(m_RBulge, m_I0, m_k), m_a);
+  return (x < m_bulge_radius) ? IntensityBulge(x, m_i0, m_k) : IntensityDisc(x - m_bulge_radius, IntensityBulge(m_bulge_radius, m_i0, m_k), m_a);
 }
 

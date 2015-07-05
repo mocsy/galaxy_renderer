@@ -12,28 +12,31 @@ class CumulativeDistributionFunction {
   typedef double (CumulativeDistributionFunction::*dist_fun_t)(double x);
 
   CumulativeDistributionFunction();
+  CumulativeDistributionFunction(double a, double bulge_radius, double max, int nSteps = 1000);
+  CumulativeDistributionFunction(CumulativeDistributionFunction&& rhs);
+
   virtual ~CumulativeDistributionFunction() = default;
+
+  CumulativeDistributionFunction& operator=(CumulativeDistributionFunction&& rhs);
 
   double ProbFromVal(double fVal);
   double ValFromProb(double fVal);
-
-  void SetupRealistic(double I0, double k, double a, double RBulge, double min, double max, int nSteps);
 
 
   private:
 
 
-  dist_fun_t m_pDistFun;
-  double m_fMin;
-  double m_fMax;
-  double m_fWidth;
-  int m_nSteps;
+  dist_fun_t m_intensity_funtion;
+  double m_min;
+  double m_max;
+  double m_width;
+  int m_number_of_steps;
 
   // parameters for realistic star distribution
-  double m_I0;
+  double m_i0;
   double m_k;
   double m_a;
-  double m_RBulge;
+  double m_bulge_radius;
 
   std::vector <double> m_vM1;
   std::vector <double> m_vY1;
@@ -43,7 +46,7 @@ class CumulativeDistributionFunction {
   std::vector <double> m_vY2;
   std::vector <double> m_vX2;
 
-  void BuildCDF(int nSteps);
+  void BuildCDF();
 
   double IntensityBulge(double R, double I0, double k);
   double IntensityDisc(double R, double I0, double a);

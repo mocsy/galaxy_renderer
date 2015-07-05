@@ -1,5 +1,5 @@
 /*
- * star.cpp
+ * Galaxy.cpp
  *
  *  Created on: 03.07.2015
  *      Author: beltoforion, scones

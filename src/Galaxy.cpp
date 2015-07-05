@@ -11,6 +11,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <random>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -111,7 +112,18 @@ void Galaxy::Reset() {
 
 void Galaxy::InitStars() {
   static const double c_temperature = 6000.0;
+
   assert(3 <= m_vstar.size());
+
+  core::support::xorshift<std::uint64_t> random_generator(m_seed);
+  std::uniform_real_distribution<double> distributor(0.0, 1.0);
+  std::uniform_real_distribution<double> theta_distributor(0.0, 360.0);
+  std::uniform_real_distribution<double> galactic_axis_distributor(-m_radGalaxy, m_radGalaxy);
+  std::uniform_real_distribution<double> dust_brightness_distributor(0.015, 0.025);
+  std::uniform_real_distribution<double> h2_temperature_distributor(3000.0, 9000.0);
+  std::uniform_real_distribution<double> h2_brightness_distributor(0.1, 0.15);
+  std::uniform_real_distribution<double> star_brightness_distributor(0.1, 0.3);
+  std::uniform_real_distribution<double> star_temperatur_distributor(4000.0, 8000.0);
 
   // The first three stars can be used for aligning the
   // camera with the galaxy rotation.
@@ -161,17 +173,17 @@ void Galaxy::InitStars() {
   // Initialize the other stars
   for (auto it = m_vstar.begin() + 3; it != m_vstar.end(); ++it) {
     // random value between -1 and 1
-    rad = m_cdf.ValFromProb((double) rand() / (double) RAND_MAX);
+    rad = m_cdf.ValFromProb(distributor(random_generator));
 
     *it = star(
-      360.0 * ((double) rand() / RAND_MAX),                   // theta
+      theta_distributor(random_generator),                    // theta
       GetOrbitalVelocity(rad),                                // velocity theta
       GetAngularOffset(rad),                                  // angle
       rad,                                                    // half minor axis
       rad *  GetExcentricity(rad),                            // half major axis
-      6000 + (4000 * ((double) rand() / RAND_MAX)) - 2000,    // temperature
+      star_temperatur_distributor(random_generator),          // temperature
       core::t_vec2d(),                                        // center
-      0.1 + 0.2 * (double) rand() / (double) RAND_MAX         // brightness
+      star_brightness_distributor(random_generator)           // brightness
     );
 
     int idx = std::min(1.0 / dh * (it->m_a + it->m_b) / 2.0, 99.0);
@@ -185,23 +197,23 @@ void Galaxy::InitStars() {
     if (0 == i++ % 4) {
       rad = m_cdf.ValFromProb((double) rand() / (double) RAND_MAX);
     } else {
-      x = 2 * m_radGalaxy * ((double) rand() / RAND_MAX) - m_radGalaxy;
-      y = 2 * m_radGalaxy * ((double) rand() / RAND_MAX) - m_radGalaxy;
+      x = galactic_axis_distributor(random_generator);
+      y = galactic_axis_distributor(random_generator);
       rad = sqrt(x * x + y * y);
     }
 
     dust.m_a = rad;
     dust.m_b = rad * GetExcentricity(rad);
     dust.m_angle = GetAngularOffset(rad);
-    dust.m_theta = 360.0 * ((double) rand() / RAND_MAX);
+    dust.m_theta = theta_distributor(random_generator);
     dust.m_velTheta = GetOrbitalVelocity((dust.m_a + dust.m_b) / 2.0);
     dust.m_center = core::t_vec2d();
 
     // I want the outer parts to appear blue, the inner parts yellow. I'm imposing
-    // the following temperature distribution (no science here it just looks right)
+    // the following temperature distributor (no science here it just looks right)
     dust.m_temp = 5000 + rad / 4.5;
 
-    dust.m_mag = 0.015 + 0.01 * (double) rand() / (double) RAND_MAX;
+    dust.m_mag = dust_brightness_distributor(random_generator);
 
     int idx = std::min(1.0 / dh * (dust.m_a + dust.m_b) / 2.0, 99.0);
     m_count_by_rad [idx]++;
@@ -209,20 +221,21 @@ void Galaxy::InitStars() {
 
   // initialize h2
   for (unsigned int i = 0; i < m_vh2.size() >> 1; ++i) {
-    x = 2 * (m_radGalaxy) * ((double) rand() / RAND_MAX) - (m_radGalaxy);
-    y = 2 * (m_radGalaxy) * ((double) rand() / RAND_MAX) - (m_radGalaxy);
+    x = galactic_axis_distributor(random_generator);
+    y = galactic_axis_distributor(random_generator);
     rad = sqrt(x * x + y * y);
 
     int k1 = 2 * i;
     m_vh2[k1].m_a = rad;
     m_vh2[k1].m_b = rad * GetExcentricity(rad);
     m_vh2[k1].m_angle = GetAngularOffset(rad);
-    m_vh2[k1].m_theta = 360.0 * ((double) rand() / RAND_MAX);
+    m_vh2[k1].m_theta = theta_distributor(random_generator);
     m_vh2[k1].m_velTheta = GetOrbitalVelocity((m_vh2 [k1].m_a + m_vh2 [k1].m_b) / 2.0);
     m_vh2[k1].m_center = core::t_vec2d();
-    m_vh2[k1].m_temp = 6000 + (6000 * ((double) rand() / RAND_MAX)) - 3000;
-    m_vh2[k1].m_mag = 0.1 + 0.05 * (double) rand() / (double) RAND_MAX;
-    int idx = std::min(1.0 / dh * (m_vh2[k1].m_a + m_vh2[k1].m_b) / 2.0, 99.0);
+    m_vh2[k1].m_temp = h2_temperature_distributor(random_generator);
+    m_vh2[k1].m_mag = h2_brightness_distributor(random_generator);
+
+    int idx = static_cast<int>(std::min(1.0 / dh * (m_vh2[k1].m_a + m_vh2[k1].m_b) / 2.0, 99.0));
     m_count_by_rad [idx]++;
 
     int k2 = 2 * i + 1;
@@ -234,7 +247,7 @@ void Galaxy::InitStars() {
     m_vh2[k2].m_center = m_vh2[k1].m_center;
     m_vh2[k2].m_temp = m_vh2[k1].m_temp;
     m_vh2[k2].m_mag = m_vh2[k1].m_mag;
-    idx = std::min(1.0 / dh * (m_vh2[k2].m_a + m_vh2[k2].m_b) / 2.0, 99.0);
+    idx = static_cast<int>(std::min(1.0 / dh * (m_vh2[k2].m_a + m_vh2[k2].m_b) / 2.0, 99.0));
     m_count_by_rad [idx]++;
   }
 }

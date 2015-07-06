@@ -172,7 +172,6 @@ void Galaxy::InitStars() {
     });
 //    int idx = std::min(1.0 / dh * (it->m_a + it->m_b) / 2.0, 99.0);
 //    m_count_by_rad [idx]++;
-    std::cout << "x = " << stars.back().a << ", y = " << stars.back().b << std::endl;
   }
 
   m_pstars = new star_particles(stars);

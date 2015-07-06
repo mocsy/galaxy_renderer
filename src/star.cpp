@@ -56,10 +56,15 @@ core::t_vec2d const& star::CalcXY() {
   // temporaries to save cpu time
   double cos_alpha = cos(alpha),
          sin_alpha = sin(alpha),
-         cos_beta = cos(beta),
-         sin_beta = sin(beta);
+         cos_beta  = cos( beta),
+         sin_beta  = sin( beta);
 
-  m_pos = m_center + core::t_vec2d((m_a * cos_alpha * cos_beta - m_b * sin_alpha * sin_beta), (m_a * cos_alpha * sin_beta + m_b * sin_alpha * cos_beta));
+  // calculating the new position on a ellipse rotated by m_angle where the point is defined by theta, m_a and m_b on that ellipse
+  // ( see http://quickcalcbasic.com/ellipse%20line%20intersection.pdf [4a] and [4b] )
+  m_pos = m_center + core::t_vec2d(
+    (m_a * cos_beta * cos_alpha - m_b * sin_beta * sin_alpha),
+    (m_a * sin_beta * cos_alpha + m_b * cos_beta * sin_alpha)
+  );
   return m_pos;
 }
 

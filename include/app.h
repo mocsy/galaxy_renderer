@@ -14,6 +14,8 @@
 
 #include "core/window.h"
 #include "core/glfw.h"
+#include "core/vertex_array.h"
+#include "core/timer.h"
 #include "Galaxy.h"
 
 
@@ -23,6 +25,7 @@ class app {
 
 
   app(std::uint64_t const number_of_stars);
+  ~app();
 
   void init();
   void run();
@@ -35,6 +38,10 @@ class app {
   core::glfw m_glfw;
   core::window m_window;
   Galaxy m_galaxy;
+  core::vertex_array m_va;
+  core::timer m_timer;
+
+  void initialize_galaxy_objects();
 };
 
 

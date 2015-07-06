@@ -6,9 +6,10 @@
 #include <cinttypes>
 
 
-#include "core/vectors.h"
-#include "star.h"
+#include "core/types.h"
+//#include "star.h"
 #include "CumulativeDistributionFunction.h"
+#include "star_particles.h"
 
 
 /*
@@ -23,9 +24,13 @@ class Galaxy {
   ~Galaxy() = default;
 
   void Reset();
+  void InitStars();
+
+
+  void render();
+
 
   // Properties depending on the orbital radius
-
   double const GetExcentricity(double const& rad) const;
   double const GetOrbitalVelocity(double const& rad) const;
   double const GetAngularOffset(double const& rad) const;
@@ -40,16 +45,12 @@ class Galaxy {
   double const GetTimeStep() const;
   double const GetTime() const;
   double const GetAngularOffset() const;
-  int const GetNumStars() const;
-  int const GetNumDust() const;
-  int const GetNumH2() const;
-  std::vector<star> const& GetStars() const;
-  std::vector<star> const& GetDust() const;
-  std::vector<star> const& GetH2() const;
-  core::t_vec2d const& get_star_pos_at_index(int idx);
-
-
-  void SingleTimeStep(double time);
+//  int const GetNumStars() const;
+//  int const GetNumDust() const;
+//  int const GetNumH2() const;
+//  std::vector<star> const& GetDust() const;
+//  std::vector<star> const& GetH2() const;
+//  core::t_vec2d const& get_star_pos_at_index(int idx);
 
 
   // setters
@@ -64,10 +65,7 @@ class Galaxy {
   private:
 
 
-  void InitStars();
-
   // Parameters needed for defining the general structure of the galaxy
-
   double m_elEx1;          ///< Excentricity of the innermost ellipse
   double m_elEx2;          ///< Excentricity of the outermost ellipse
 
@@ -87,16 +85,14 @@ class Galaxy {
   double m_timeStep;
 
   core::t_vec2d m_pos;         // Center of the galaxy
-  std::vector<star> m_vstar;   // Pointer to an array of star data
-  std::vector<star> m_vdust;   // Pointer to an array of dusty areas
-  std::vector<star> m_vh2;
-
-  CumulativeDistributionFunction m_cdf;
+//  std::vector<star> m_vdust;   // Pointer to an array of dusty areas
+//  std::vector<star> m_vh2;
 
   std::vector<std::uint64_t> m_count_by_rad;  ///< Historgramm showing distribution of stars
 
   std::uint64_t m_seed;    // randomizer seed
   std::uint64_t m_number_of_stars;
+  star_particles *m_pstars;
 };
 
 

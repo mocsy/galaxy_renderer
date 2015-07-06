@@ -24,14 +24,16 @@ int WINAPI WinMain (HINSTANCE hInst, HINSTANCE hPrev, char* lpCmdLine, int nCmdS
 int main (int argc, char** argv) {
 #endif
   try {
-    app galaxy_renderer(4000);
+    app galaxy_renderer(40000);
     galaxy_renderer.init();
 
     galaxy_renderer.run();
   } catch(std::exception & exc) {
     std::cout << "Fatal error: " << exc.what() << std::endl;
+    return -1;
   } catch(...) {
     std::cout << "Fatal error: unexpected exception" << std::endl;
+    return -1;
   }
 
   return 0;

@@ -53,3 +53,15 @@ Disclaimer and Credits:
 ---------------------------------------------------------------------------------------
 
 The current license is under LICENSE
+current version information is under VERSION
+
+---------------------------------------------------------------------------------------
+
+Mandatory libraries
+glew
+glfw
+glm
+
+working on compiler gcc 4.9.2
+working on system mingw64 (msys2)
+

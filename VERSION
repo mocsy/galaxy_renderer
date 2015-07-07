@@ -1,0 +1,2 @@
+version 0.1
+the original formulas give an result, that looks right, but have to sharp edges. When the correct formula for points on an rotated ellipse is used, it looks wrong

@@ -7,8 +7,6 @@
 
 
 #include "core/types.h"
-//#include "star.h"
-#include "CumulativeDistributionFunction.h"
 #include "star_particles.h"
 
 

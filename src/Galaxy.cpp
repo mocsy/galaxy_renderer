@@ -19,6 +19,12 @@
 #include "Galaxy.h"
 #include "Constants.h"
 #include "core/support/xorshift.h"
+#include "intensity_probability_function.h"
+#include "core/probability_density_distribution.h"
+
+
+const extern double K = 0.02;
+const extern double CORE_INTENSITY = 1.0;
 
 
 double rnd_spread(double v, double o) {
@@ -104,11 +110,17 @@ void Galaxy::InitStars() {
 
   Reset();
 
-  CumulativeDistributionFunction cdf(m_radGalaxy / 3.0, m_radCore, m_radFarField);
-
   std::vector<star_particles::star> stars;
 
+  // initialize random number generator
   core::support::xorshift<std::uint64_t> random_generator(m_seed);
+
+  // initialize special distribution for star distances
+  typedef intensity_probabilty_function<double> ipf;
+  ipf pf(13.000, 4000.0);
+  core::probability_density_distribution<double> pdd(pf, 100000, 0.0, 1300000.0);
+
+  // initialize uniform distributions
   std::uniform_real_distribution<double> distributor(0.0, 1.0);
   std::uniform_real_distribution<float> theta_distributor(0.0, 2.0 * glm::pi<double>());
   std::uniform_real_distribution<double> galactic_axis_distributor(-m_radGalaxy, m_radGalaxy);
@@ -159,7 +171,7 @@ void Galaxy::InitStars() {
 
   // Initialize the other stars
   for (std::uint64_t i = 0; i < m_number_of_stars; ++i) {
-    double radius = cdf.ValFromProb(distributor(random_generator));
+    double radius = pdd(random_generator);
 
     stars.push_back({
       (float)radius,
@@ -182,7 +194,7 @@ void Galaxy::InitStars() {
   int i = 0;
   for (auto & dust : m_vdust ) {
     if (0 == i++ % 4) {
-      rad = cdf.ValFromProb(distributor(random_generator));
+      rad = pdd(random_generator);
     } else {
       x = galactic_axis_distributor(random_generator);
       y = galactic_axis_distributor(random_generator);

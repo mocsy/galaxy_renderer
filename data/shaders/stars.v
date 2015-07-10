@@ -20,14 +20,14 @@ vec2 convert_coordinates(vec2 radius, float theta, float angle) {
   float sin_beta  = sin(beta);
 
   return vec2(
-  	radius.x * cos_beta * cos_alpha - radius.y * sin_beta * sin_alpha,
-  	radius.x * sin_beta * cos_alpha + radius.y * cos_beta * sin_alpha
+    radius.y * cos_beta * cos_alpha - radius.x * sin_beta * sin_alpha,
+    radius.y * sin_beta * cos_alpha + radius.x * cos_beta * sin_alpha
   );
 }
 
 
 void main() {
-  float theta = polar_star_position.z  + (star_attributes.x/10000.0) * time;
+  float theta = polar_star_position.z  + (star_attributes.x/10000.0) * time * 0.3;
   if (theta > 2 * pi) {
     theta -= 2 * pi;
   }

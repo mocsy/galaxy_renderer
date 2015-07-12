@@ -20,21 +20,7 @@ namespace core {
     public:
 
 
-    window(int width, int height, std::string const & title, int anti_aliasing_level = 0, int open_gl_major = 4, int open_gl_minor = 2, GLFWwindow* parent = nullptr, GLFWmonitor* monitor = nullptr)
-      :
-        m_handle(nullptr),
-        m_parent(parent),
-        m_monitor(monitor),
-        m_title(title),
-        m_width(width),
-        m_height(height),
-        m_anti_aliasing_level(anti_aliasing_level),
-        m_open_gl_major_version(open_gl_major),
-        m_open_gl_minor_version(open_gl_minor)
-    {
-
-    }
-
+    window(int width, int height, std::string const & title, bool fullscreen, int anti_aliasing_level = 0, int open_gl_major = 4, int open_gl_minor = 2, GLFWwindow* parent = nullptr, GLFWmonitor* monitor = nullptr);
     ~window() {
       shutdown();
     }
@@ -49,6 +35,7 @@ namespace core {
       this->m_anti_aliasing_level = right.m_anti_aliasing_level;
       this->m_open_gl_major_version = right.m_open_gl_major_version;
       this->m_open_gl_minor_version = right.m_open_gl_minor_version;
+      this->m_fullscreen = right.m_fullscreen;
 
       right.m_handle = nullptr;
       right.m_parent = nullptr;
@@ -60,6 +47,7 @@ namespace core {
     void shutdown();
 
     GLFWwindow * const get_handle() const { return m_handle; }
+    void set_key_callback(GLFWkeyfun key_callback_function);
     void make_current();
     bool should_close();
     void swap_buffers();
@@ -82,6 +70,8 @@ namespace core {
     int m_anti_aliasing_level;
     int m_open_gl_major_version;
     int m_open_gl_minor_version;
+
+    bool m_fullscreen;
   };
 
 }

@@ -18,16 +18,19 @@
 #include "app.h"
 
 
+app *pgalaxy_renderer = nullptr;
+
+
 #ifdef __MINGW64__
 int WINAPI WinMain (HINSTANCE hInst, HINSTANCE hPrev, char* lpCmdLine, int nCmdShow) {
 #else
 int main (int argc, char** argv) {
 #endif
   try {
-    app galaxy_renderer(40000);
-    galaxy_renderer.init();
+    pgalaxy_renderer = new app(40000);
+    pgalaxy_renderer->init();
 
-    galaxy_renderer.run();
+    pgalaxy_renderer->run();
   } catch(std::exception & exc) {
     std::cout << "Fatal error: " << exc.what() << std::endl;
     return -1;
@@ -35,6 +38,8 @@ int main (int argc, char** argv) {
     std::cout << "Fatal error: unexpected exception" << std::endl;
     return -1;
   }
+
+  delete pgalaxy_renderer;
 
   return 0;
 }

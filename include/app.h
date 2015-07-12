@@ -34,12 +34,20 @@ class app {
   protected:
 
 
+  void error_callback(int error, const char* description);
+  void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+  static void global_error_callback(int error, const char* description);
+  static void global_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+
   std::uint64_t m_number_of_stars;
   core::glfw m_glfw;
   core::window m_window;
   Galaxy m_galaxy;
   core::vertex_array m_va;
   core::timer m_timer;
+  bool m_active;
 
   void initialize_galaxy_objects();
 };

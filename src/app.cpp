@@ -11,11 +11,14 @@
 #include <iostream>
 
 
+extern app *pgalaxy_renderer;
+
+
 app::app(std::uint64_t const number_of_stars)
   :
     m_number_of_stars(number_of_stars),
-    m_glfw(core::glfw()),
-    m_window(core::window(1980, 1080, "galaxy simulation by density wave")),
+    m_glfw(),
+    m_window(1980, 1080, "galaxy simulation by density wave", true),
     m_galaxy(
       13000.0,              // radius of the galaxy
       4000.0,               // radius of the core
@@ -28,7 +31,8 @@ app::app(std::uint64_t const number_of_stars)
       m_number_of_stars     // total number of stars
     ),
     m_va(),
-    m_timer()
+    m_timer(),
+    m_active(true)
 {
 }
 
@@ -40,9 +44,11 @@ app::~app() {
 void app::init() {
   // init glfw
   m_glfw.init();
+  glfwSetErrorCallback(&app::global_error_callback);
 
   // open window
   m_window.init();
+  m_window.set_key_callback(&app::global_key_callback);
   m_window.make_current();
 
   // activate vertex_array
@@ -67,8 +73,32 @@ void app::run() {
     m_window.swap_buffers();
     glfwPollEvents();
     ++i;
-  } while (!m_window.should_close());
+  } while (!m_window.should_close() && m_active);
 
   std::cout << "frames rendered: " << i << std::endl;
+}
+
+
+void app::error_callback(int error, const char* description) {
+  std::cerr << "GLFW error (" << error << "): " << description << std::endl;
+}
+
+
+void app::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+  switch (key) {
+    case GLFW_KEY_ESCAPE:
+      m_active = false;
+      break;
+  }
+}
+
+
+void app::global_error_callback(int error, const char* description) {
+  pgalaxy_renderer->error_callback(error, description);
+}
+
+
+void app::global_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  pgalaxy_renderer->key_callback(window, key, scancode, action, mods);
 }
 

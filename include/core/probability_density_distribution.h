@@ -13,8 +13,6 @@
 #include <random>
 #include <cinttypes>
 
-#include <iostream>
-
 
 namespace core  {
 
@@ -107,8 +105,6 @@ namespace core  {
       double integral_part;
       double fractional_part = std::modf(random_value, &integral_part);
       std::uint64_t integral(static_cast<std::uint64_t>(std::floor(integral_part)));
-
-      std::cout << integral_part << std::endl;
 
       return m_inverse_cumulative_probability_points.at(integral) + m_inverse_cumulative_probability_slopes.at(integral) * fractional_part;
     }

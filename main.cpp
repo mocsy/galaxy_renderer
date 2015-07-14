@@ -27,7 +27,7 @@ int WINAPI WinMain (HINSTANCE hInst, HINSTANCE hPrev, char* lpCmdLine, int nCmdS
 int main (int argc, char** argv) {
 #endif
   try {
-    pgalaxy_renderer = new app(40000);
+    pgalaxy_renderer = new app(400000);
     pgalaxy_renderer->init();
 
     pgalaxy_renderer->run();

@@ -25,20 +25,21 @@ namespace core {
 
 
   void shader::init() {
+    // load file content
     std::string shader_content = file::content(file_path_name());
     if (0 == shader_content.size()) {
       char buffer[1024];
       std::vsnprintf(buffer, 1024, "file is empty '%s'", const_cast<char*>(file_path_name().c_str()));
       throw std::runtime_error((char*)buffer);
     }
-    GLchar const* const c_shader_content = shader_content.c_str();
-std::cout << "shader_content:\n'" << shader_content << "'" << std::endl;
-    // initialize
-    m_handle = glCreateShader(m_type);
 
+    // grab a handle
+    m_handle = glCreateShader(m_type);
     if (!m_handle)
       throw std::runtime_error("glCreateShader failed");
 
+    // load the shader source and compile
+    GLchar const* const c_shader_content = shader_content.c_str();
     glShaderSource(m_handle, 1, &c_shader_content, nullptr);
     glCompileShader(m_handle);
     check_for_error(m_result);

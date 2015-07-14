@@ -33,6 +33,9 @@ class app {
 
   protected:
 
+  static constexpr double CORE_ORBIT_VELOCITY = 200.0;
+  static constexpr double DISC_ORBIT_VELOCITY = 300.0;
+
 
   void error_callback(int error, const char* description);
   void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -44,12 +47,17 @@ class app {
   std::uint64_t m_number_of_stars;
   core::glfw m_glfw;
   core::window m_window;
-  Galaxy m_galaxy;
   core::vertex_array m_va;
   core::timer m_timer;
   bool m_active;
+  double m_inner_excentricity;
+  double m_outer_excentricity;
+  double m_angular_offset;
+  double m_core_radius;
+  double m_galaxy_radius;
+  double m_sigma;
 
-  void initialize_galaxy_objects();
+  Galaxy *m_pgalaxy;
 };
 
 

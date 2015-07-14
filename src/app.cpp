@@ -22,9 +22,9 @@ app::app(std::uint64_t const number_of_stars)
     m_va(),
     m_timer(),
     m_active(true),
-    m_inner_excentricity(0.9),
-    m_outer_excentricity(0.5),
-    m_angular_offset(0.0005),
+    m_inner_excentricity(0.78),
+    m_outer_excentricity(0.92),
+    m_angular_offset(0.0004),
     m_core_radius(4000.0),
     m_galaxy_radius(13000.0),
     m_sigma(0.5),
@@ -47,6 +47,17 @@ app::app(std::uint64_t const number_of_stars)
 app::~app() {
   delete m_pgalaxy;
   m_pgalaxy = nullptr;
+
+  std::cout
+    << "final configuration:\n"
+    << "radius: " << m_galaxy_radius << "\n"
+    << "core radius: " << m_core_radius << "\n"
+    << "angular offset: " << m_angular_offset << "\n"
+    << "inner excentricity: " << m_inner_excentricity << "\n"
+    << "outer excentricity: " << m_outer_excentricity << "\n"
+    << "sigma: " << m_sigma << "\n"
+    << "star count: " << m_number_of_stars << "\n"
+    << std::endl;
 }
 
 

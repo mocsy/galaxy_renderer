@@ -71,7 +71,6 @@ void star_particles::render() {
 
   glEnable(GL_POINT_SPRITE);
   glEnable(GL_PROGRAM_POINT_SIZE);
-  glDepthRange(0.01, 1000000.0);
 
   m_shader_program.activate();
 

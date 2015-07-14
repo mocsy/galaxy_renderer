@@ -21,6 +21,8 @@ class Galaxy {
   Galaxy(Galaxy&&);
   ~Galaxy() = default;
 
+  void operator=(Galaxy&&);
+
   void Reset();
   void InitStars();
 

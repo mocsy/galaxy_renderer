@@ -93,6 +93,35 @@ Galaxy::Galaxy(Galaxy&& rhs)
   rhs.m_pstars = nullptr;
 }
 
+void Galaxy::operator=(Galaxy&& rhs) {
+  m_elEx1 = rhs.m_elEx1;
+  m_elEx2 = rhs.m_elEx2;
+  m_velOrigin = rhs.m_velOrigin;
+  m_velInner = rhs.m_velInner;
+  m_velOuter = rhs.m_velOuter;
+  m_angleOffset = rhs.m_angleOffset;
+  m_radCore = rhs.m_radCore;
+  m_radGalaxy = rhs.m_radGalaxy;
+  m_radFarField = rhs.m_radFarField;
+  m_sigma = rhs.m_sigma;
+  m_velAngle = rhs.m_velAngle;
+  m_time = rhs.m_time;
+  m_timeStep = rhs.m_timeStep;
+  m_pos = std::move(rhs.m_pos);
+//    m_vdust(std::move(rhs.m_vdust)),
+//    m_vh2(std::move(rhs.m_vh2)),
+  m_count_by_rad = std::move(rhs.m_count_by_rad);
+  m_seed = rhs.m_seed;
+  m_number_of_stars = rhs.m_number_of_stars;
+  m_pstars = rhs.m_pstars;
+
+  // fixed size intializiations
+  //  m_vh2.resize(600);
+  m_count_by_rad.resize(100);
+  m_radFarField = m_radGalaxy * 2.0;
+  rhs.m_pstars = nullptr;
+}
+
 
 void Galaxy::Reset() {
   // match (new?) size
@@ -117,8 +146,8 @@ void Galaxy::InitStars() {
 
   // initialize special distribution for star distances
   typedef intensity_probabilty_function<double> ipf;
-  ipf pf(13.000, 4000.0);
-  core::probability_density_distribution<double> pdd(pf, 100000, 0.0, 1300000.0);
+  ipf pf(m_radGalaxy, m_radCore);
+  core::probability_density_distribution<double> pdd(pf, 10000, 0.0, m_radGalaxy);
 
   // initialize uniform distributions
   std::uniform_real_distribution<double> distributor(0.0, 1.0);

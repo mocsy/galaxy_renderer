@@ -38,6 +38,9 @@ namespace core {
         glAttachShader(m_handle, some_shader.get_handle());
         ++attached_shaders;
       } catch (std::system_error const &e) {
+        // ignore missing files
+      } catch (std::runtime_error const &e) {
+        // ignore empty files
       }
     }
     if (0 == attached_shaders)

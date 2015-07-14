@@ -17,38 +17,29 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <stdexcept>
+#include <cstdio>
 
 
 namespace core {
 
 
   void shader::init() {
-    GLchar const * shader_content = file::content(file_path_name()).c_str();
-
-    m_handle = glCreateShader(m_type);
-    /*
-    // initialize
-    auto shader_content = file::content(file_path_name()).c_str();
-    glShaderSource(m_handle, 1, &shader_content, nullptr);
-    glCompileShader(m_handle);
-    // verification
-    int result;
-    glGetShaderiv(m_handle, GL_COMPILE_STATUS, &result);
-
-    if (result == GL_FALSE) {
-      int log_length;
-      glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &log_length);
-      char *buffer = new char[log_length];
-      glGetShaderInfoLog(m_handle, log_length, nullptr, buffer);
-      errors::shader_error compile_error(buffer);
-      delete[] buffer;
-      throw compile_error;
+    std::string shader_content = file::content(file_path_name());
+    if (0 == shader_content.size()) {
+      char buffer[1024];
+      std::vsnprintf(buffer, 1024, "file is empty '%s'", const_cast<char*>(file_path_name().c_str()));
+      throw std::runtime_error((char*)buffer);
     }
-    */
-
+    GLchar const* const c_shader_content = shader_content.c_str();
+std::cout << "shader_content:\n'" << shader_content << "'" << std::endl;
     // initialize
+    m_handle = glCreateShader(m_type);
 
-    glShaderSource(m_handle, 1, &shader_content, 0);
+    if (!m_handle)
+      throw std::runtime_error("glCreateShader failed");
+
+    glShaderSource(m_handle, 1, &c_shader_content, nullptr);
     glCompileShader(m_handle);
     check_for_error(m_result);
   }
